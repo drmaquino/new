@@ -1,0 +1,19 @@
+{
+  "type": "module",
+  "name": "make-new",
+  "version": "1.0.0",
+  "main": "bin/index.js",
+  "scripts": {
+    "start": "node ."
+  },
+  "bin": {
+    "folders": "bin/index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "script to create files and/or folders for an Express server",
+  "devDependencies": {
+    "@types/express": "^4.17.17"
+  }
+}
