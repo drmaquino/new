@@ -8,7 +8,7 @@ Opciones:
 (npx make-new) project [nombreProyecto]:
     crea una carpeta con el nombre dado (o server+timestamp por defecto)
 (npx make-new) [ middleware | service | repository]:
-    crea una carpeta con el nombre dado (o server+timestamp por defecto)
+    crea una carpeta (si no existe aun) con el componente elegido
 `)
     process.exit()
 }
