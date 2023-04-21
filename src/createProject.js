@@ -1,15 +1,5 @@
 import fs from 'fs'
-
-function findPath(folderName) {
-    const fullPath = `../assets/${folderName}`
-    return new URL(fullPath, import.meta.url)
-}
-
-function curryClone(projectName) {
-    return function (path) {
-        fs.cpSync(findPath(path), `${projectName}/${path}`, { recursive: true })
-    }
-}
+import { findPath, curryClone } from './utils.js'
 
 export function createProject(args = []) {
 
@@ -52,14 +42,11 @@ Opciones:
 
     const clone = curryClone(projectName)
 
+    clone('src/main.js')
     clone('src/app')
     clone('src/config')
     clone('src/routers')
-    clone('src/middlewares')
     clone('src/controllers')
-    clone('src/services')
-    clone('src/repositories')
-    clone('src/main.js')
 
     if (args.includes('--frontend') || args.includes('-F')) {
         clone('public')
