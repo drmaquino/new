@@ -3,6 +3,8 @@ import {
     createRepository,
     createService,
     createRouter,
+    createDao,
+    createModule,
 } from './createComponent.js'
 import { createProject } from './createProject.js'
 
@@ -14,21 +16,27 @@ if (option === '--help' || option === '-H') {
 Opciones:
 (npx make-new) project [nombreProyecto]:
     crea una nuevo proyecto con el nombre dado (o server+timestamp por defecto)
-(npx make-new) < middleware | service | repository >:
-    crea una carpeta (si no existe aun) con el componente elegido
+(npx make-new) module < nombreRecurso >:
+    crea un router, controller, y dao para un nuevo recurso (en sus respectivas carpetas)
+(npx make-new) < router | controller | dao | service | repository >:
+    crea un archivo con el componente elegido (en su respectiva carpeta)
 `)
 }
 
 else if (option === 'project') {
     createProject(args)
-} else if (option === 'service') {
-    createService(...args)
-} else if (option === 'controller') {
-    createController(...args)
-} else if (option === 'repository') {
-    createRepository(...args)
 } else if (option === 'router') {
     createRouter(...args)
+} else if (option === 'controller') {
+    createController(...args)
+} else if (option === 'dao') {
+    createDao(...args)
+} else if (option === 'module') {
+    createModule(...args, 'src')
+} else if (option === 'repository') {
+    createRepository(...args)
+} else if (option === 'service') {
+    createService(...args)
 } else {
-    console.log('opcion inválida. consulte la ayuda.')
+    console.log('opcion inválida. consulte la ayuda ( -H | --help ).')
 }

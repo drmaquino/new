@@ -1,6 +1,6 @@
 import { Router } from 'express'
-
 {{#if importController}}
+
 import {
   handleGet,
   handlePost,

@@ -1,0 +1,80 @@
+function matcher(query) {
+  return function (obj) {
+    const conditions = Object.entries(query)
+    for (const [key, value] of conditions) {
+      if (!obj[key] || obj[key] != value) return false
+    }
+    return true
+  }
+}
+
+function toPojo(object) {
+  return JSON.parse(
+    JSON.stringify(
+      object
+    )
+  )
+}
+
+class {{ nombreMayuscula }}Dao {
+  #{{ nombreMinuscula }}
+  constructor() {
+    this.#{{ nombreMinuscula }} = []
+  }
+
+  create(element) {
+    const pojo = toPojo(element)
+    this.#{{ nombreMinuscula }}.push(pojo)
+    return Promise.resolve(pojo)
+  }
+
+  readOne(criteria) {
+    const result = this.#{{ nombreMinuscula }}.find(matcher(criteria))
+    if (!result) throw new Error('NOT FOUND')
+    return Promise.resolve(result)
+  }
+
+  readMany(criteria) {
+    return Promise.resolve(this.#{{ nombreMinuscula }}.filter(matcher(criteria)))
+  }
+
+  updateOne(criteria, newData) {
+    const index = this.#{{ nombreMinuscula }}.findIndex(matcher(criteria))
+    if (index === -1) throw new Error('NOT FOUND')
+    this.#{{ nombreMinuscula }}[index] = toPojo({
+      ...this.#{{ nombreMinuscula }}[index],
+      ...newData
+    })
+    return Promise.resolve(this.#{{ nombreMinuscula }}[index])
+  }
+
+  updateMany(criteria, newData) {
+    let modifiedCount = 0
+    for (let index = 0; index < this.#{{ nombreMinuscula }}.length; index++) {
+      if (matcher(criteria)(this.#{{ nombreMinuscula }}[index])) {
+        this.#{{ nombreMinuscula }}[index] = toPojo({
+          ...this.#{{ nombreMinuscula }}[index],
+          ...newData
+        })
+        modifiedCount++
+      }
+    }
+    return Promise.resolve({ modifiedCount })
+  }
+
+  deleteOne(criteria) {
+    const index = this.#{{ nombreMinuscula }}.findIndex(matcher(criteria))
+    if (index === -1) throw new Error('NOT FOUND')
+    const deleted = this.#{{ nombreMinuscula }}[index]
+    this.#{{ nombreMinuscula }}.splice(index, 1)
+    return Promise.resolve(deleted)
+  }
+
+  deleteMany(criteria) {
+    let initialCount = this.#{{ nombreMinuscula }}.length
+    this.#{{ nombreMinuscula }} = this.#{{ nombreMinuscula }}.filter(e => !matcher(criteria)(e))
+    return Promise.resolve({ deletedCount: initialCount - this.#{{ nombreMinuscula }}.length })
+  }
+}
+
+export const {{ nombreMinuscula }}Dao = new {{ nombreMayuscula }}Dao()

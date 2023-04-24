@@ -1,6 +1,8 @@
 import express from 'express'
-import { router } from '../routers/_.router.js'
+import { xsRouter } from '../routers/xs.router.js'
 
 export const app = express()
 
-app.use('/', router)
+app.use(express.json())
+
+app.use('/', xsRouter)

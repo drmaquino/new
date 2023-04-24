@@ -1,12 +1,12 @@
 class {{ nombreMayuscula }}Repository {
   constructor() { }
-  create(data) { }
-  readOne(criteria) { }
-  readMany(criteria) { }
-  updateOne(criteria, newData) { }
-  updateMany(criteria, newData) { }
-  deleteOne(criteria) { }
-  deleteMany(criteria) { }
+  create(data, options) { }
+  readOne(criteria, options) { }
+  readMany(criteria, options) { }
+  updateOne(criteria, newData, options) { }
+  updateMany(criteria, newData, options) { }
+  deleteOne(criteria, options) { }
+  deleteMany(criteria, options) { }
 }
 
 export const {{ nombreMinuscula }}Repository = new {{ nombreMayuscula }}Repository()

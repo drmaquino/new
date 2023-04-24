@@ -1,0 +1,55 @@
+import mongoose from 'mongoose'
+
+function toPojo(object) {
+  return JSON.parse(
+    JSON.stringify(
+      object
+    )
+  )
+}
+
+class {{ nombreMayuscula }}Dao {
+  #{{ nombreMinuscula }}Model
+  constructor(mongooseModel) {
+    this.#{{ nombreMinuscula }}Model = mongooseModel
+  }
+
+  async create(element) {
+    return toPojo(await this.#{{ nombreMinuscula }}Model.create(element))
+  }
+
+  async readOne(criteria) {
+    const result = await this.#{{ nombreMinuscula }}Model.findOne(criteria)
+    if (!result) throw new Error('NOT FOUND')
+    return result
+  }
+
+  async readMany(criteria) {
+    return await this.#{{ nombreMinuscula }}Model.find(criteria).lean()
+  }
+
+  async updateOne(criteria, newData) {
+    const modifiedUser = await this.#{{ nombreMinuscula }}Model.findOneAndUpdate(criteria, newData, { new: true })
+    if (!modifiedUser) throw new Error('NOT FOUND')
+    return toPojo(modifiedUser)
+  }
+
+  async updateMany(criteria, newData) {
+    await this.#{{ nombreMinuscula }}Model.updateMany(criteria, newData)
+  }
+
+  async deleteOne(criteria) {
+    const deletedUser = await this.#{{ nombreMinuscula }}Model.findOneAndDelete(criteria)
+    if (!deletedUser) throw new Error('NOT FOUND')
+    return toPojo(deletedUser)
+  }
+
+  async deleteMany(criteria) {
+    await this.#{{ nombreMinuscula }}Model.deleteMany(criteria)
+  }
+}
+
+const {{ nombreMinuscula }}Schema = new mongoose.Schema({}, { versionKey: false })
+const {{ nombreMinuscula }}Model = mongoose.model('{{ nombreMinuscula }}', {{ nombreMinuscula }}Schema)
+
+export const {{ nombreMinuscula }}Dao = new {{ nombreMayuscula }}Dao({{ nombreMinuscula }}Model)
