@@ -15,5 +15,8 @@
   "description": "script to create files and/or folders for an Express server",
   "devDependencies": {
     "@types/express": "^4.17.17"
+  },
+  "dependencies": {
+    "handlebars": "^4.7.7"
   }
 }

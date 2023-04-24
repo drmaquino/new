@@ -1,0 +1,17 @@
+import { Router } from 'express'
+
+{{#if importController}}
+import {
+  handleGet,
+  handlePost,
+  handlePut,
+  handleDelete,
+} from '../controllers/{{ nombreMinuscula }}.controller.js'
+{{/if}}
+
+export const {{ nombreMinuscula }}Router = Router()
+
+{{ nombreMinuscula }}Router.get('/:id?', {{#if importController}}handleGet{{else}}(req, res, next) => { }{{/if}})
+{{ nombreMinuscula }}Router.post('/', {{#if importController}}handlePost{{else}}(req, res, next) => { }{{/if}})
+{{ nombreMinuscula }}Router.put('/:id', {{#if importController}}handlePut{{else}}(req, res, next) => { }{{/if}})
+{{ nombreMinuscula }}Router.delete('/:id', {{#if importController}}handleDelete{{else}}(req, res, next) => { }{{/if}})

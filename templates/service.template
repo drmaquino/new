@@ -1,0 +1,5 @@
+class {{ nombreMayuscula }}Service {
+  constructor() { }
+}
+
+export const {{ nombreMinuscula }}Service = new {{ nombreMayuscula }}Service()

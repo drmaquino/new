@@ -3,7 +3,7 @@ import * as _ from '../controllers/_.controller.js'
 
 export const router = Router()
 
-router.get('/:id?', _.get_)
-router.post('/', _.post_)
-router.put('/:id', _.put_)
-router.delete('/:id', _.delete_)
+router.get('/:id?', _.handleGet)
+router.post('/', _.handlePost)
+router.put('/:id', _.handlePut)
+router.delete('/:id', _.handleDelete)

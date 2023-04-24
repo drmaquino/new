@@ -1,0 +1,48 @@
+{{#if importRepository}}
+import { {{ nombreMinuscula }}Repository } from '../repositories/{{ nombreMinuscula }}.repository.js'
+
+{{/if}}
+export async function handleGet(req, res, next) {
+  if (req.params.id) {
+    {{#if importRepository}}
+    const {{ nombreMinuscula }} = {{ nombreMinuscula }}Repository.readMany(req.query)
+    res.json(await {{ nombreMinuscula }})
+    {{else}}
+    res.send('peticion "getById" recibida!')  
+    {{/if}}
+  } else {
+    {{#if importRepository}}
+    const buscado = {{ nombreMinuscula }}Repository.readOne(req.query)
+    res.json(await buscado)
+    {{else}}
+    res.send('peticion "get" recibida!')
+    {{/if}}
+  }
+}
+
+export async function handlePost(req, res, next) {
+  {{#if importRepository}}
+  const creado = {{ nombreMinuscula }}Repository.create(req.body)
+  res.json(await creado)
+  {{else}}
+  res.send('peticion "post" recibida!')
+  {{/if}}
+}
+
+export async function handlePut(req, res, next) {
+  {{#if importRepository}}
+  const actualizado = {{ nombreMinuscula }}Repository.updateOne(req.params.id, req.body)
+  res.json(await actualizado)
+  {{else}}
+  res.send('peticion "put:id" recibida!')
+  {{/if}}
+}
+
+export async function handleDelete(req, res, next) {
+  {{#if importRepository}}
+  const borrado = {{ nombreMinuscula }}Repository.deleteOne(req.params.id)
+  res.json(await borrado)
+  {{else}}
+  res.send('peticion "delete:id" recibida!')
+  {{/if}}
+}

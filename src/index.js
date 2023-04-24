@@ -1,29 +1,34 @@
-import { createComponent } from './createComponent.js'
+import {
+    createController,
+    createRepository,
+    createService,
+    createRouter,
+} from './createComponent.js'
 import { createProject } from './createProject.js'
-const args = process.argv.slice(2)
 
-if (args[0] === '--help' || args[0] === '-H') {
+const args = process.argv.slice(2)
+const option = args.shift()
+
+if (option === '--help' || option === '-H') {
     console.log(`
 Opciones:
 (npx make-new) project [nombreProyecto]:
-    crea una carpeta con el nombre dado (o server+timestamp por defecto)
-(npx make-new) [ middleware | service | repository]:
+    crea una nuevo proyecto con el nombre dado (o server+timestamp por defecto)
+(npx make-new) < middleware | service | repository >:
     crea una carpeta (si no existe aun) con el componente elegido
 `)
-    process.exit()
 }
 
-const validComponents = [
-    'middleware',
-    'repository',
-    'service',
-]
-
-if (args[0] === 'project') {
-    args.shift()
+else if (option === 'project') {
     createProject(args)
-} else if (validComponents.includes(args[0])) {
-    createComponent(args[0])
+} else if (option === 'service') {
+    createService(...args)
+} else if (option === 'controller') {
+    createController(...args)
+} else if (option === 'repository') {
+    createRepository(...args)
+} else if (option === 'router') {
+    createRouter(...args)
 } else {
     console.log('opcion inválida. consulte la ayuda.')
 }
