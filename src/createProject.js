@@ -55,8 +55,6 @@ Opciones:
   clone('src/main.js')
   clone('src/app')
   clone('src/config')
-  // clone('src/routers')
-  // clone('src/controllers')
   createModule('xs', 'memoria', `${projectName}/src`)
 
   if (args.includes('--frontend') || args.includes('-F')) {

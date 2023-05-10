@@ -1,5 +1,5 @@
 import { Router } from 'express'
-{{#if importController}}
+{{#if includeImports}}
 
 import {
   handleGet,
@@ -11,7 +11,7 @@ import {
 
 export const {{ nombreMinuscula }}Router = Router()
 
-{{ nombreMinuscula }}Router.get('/:id?', {{#if importController}}handleGet{{else}}(req, res, next) => { }{{/if}})
-{{ nombreMinuscula }}Router.post('/', {{#if importController}}handlePost{{else}}(req, res, next) => { }{{/if}})
-{{ nombreMinuscula }}Router.put('/:id', {{#if importController}}handlePut{{else}}(req, res, next) => { }{{/if}})
-{{ nombreMinuscula }}Router.delete('/:id', {{#if importController}}handleDelete{{else}}(req, res, next) => { }{{/if}})
+{{ nombreMinuscula }}Router.get('/:id?', {{#if includeImports}}handleGet{{else}}(req, res, next) => { }{{/if}})
+{{ nombreMinuscula }}Router.post('/', {{#if includeImports}}handlePost{{else}}(req, res, next) => { }{{/if}})
+{{ nombreMinuscula }}Router.put('/:id', {{#if includeImports}}handlePut{{else}}(req, res, next) => { }{{/if}})
+{{ nombreMinuscula }}Router.delete('/:id', {{#if includeImports}}handleDelete{{else}}(req, res, next) => { }{{/if}})
