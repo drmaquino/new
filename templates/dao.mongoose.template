@@ -1,55 +1,7 @@
 import mongoose from 'mongoose'
+import { DaoMongoose } from './DaoMongoose.js'
 
-function toPojo(object) {
-  return JSON.parse(
-    JSON.stringify(
-      object
-    )
-  )
-}
+const {{ decapitalized entityName }}Schema = new mongoose.Schema({}, { versionKey: false })
+const {{ decapitalized entityName }}Model = mongoose.model('{{ decapitalized entityName }}', {{ decapitalized entityName }}Schema)
 
-class DaoMongoose {
-  #model
-  constructor(mongooseModel) {
-    this.#model = mongooseModel
-  }
-
-  async create(element) {
-    return toPojo(await this.#model.create(element))
-  }
-
-  async readOne(criteria) {
-    const result = await this.#model.findOne(criteria).lean()
-    if (!result) throw new Error('NOT FOUND')
-    return result
-  }
-
-  async readMany(criteria) {
-    return await this.#model.find(criteria).lean()
-  }
-
-  async updateOne(criteria, newData) {
-    const modifiedUser = await this.#model.findOneAndUpdate(criteria, newData, { new: true }).lean()
-    if (!modifiedUser) throw new Error('NOT FOUND')
-    return toPojo(modifiedUser)
-  }
-
-  async updateMany(criteria, newData) {
-    await this.#model.updateMany(criteria, newData)
-  }
-
-  async deleteOne(criteria) {
-    const deletedUser = await this.#model.findOneAndDelete(criteria).lean()
-    if (!deletedUser) throw new Error('NOT FOUND')
-    return toPojo(deletedUser)
-  }
-
-  async deleteMany(criteria) {
-    await this.#model.deleteMany(criteria)
-  }
-}
-
-const {{ nombreMinuscula }}Schema = new mongoose.Schema({}, { versionKey: false })
-const {{ nombreMinuscula }}Model = mongoose.model('{{ nombreMinuscula }}', {{ nombreMinuscula }}Schema)
-
-export const {{ nombreMinuscula }}DaoMongoose = new DaoMongoose({{ nombreMinuscula }}Model)
+export const {{ decapitalized entityName }}DaoMongoose = new DaoMongoose({{ decapitalized entityName }}Model)

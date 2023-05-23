@@ -7,11 +7,13 @@ import {
     createModule,
 } from './createComponent.js'
 import { createProject } from './createProject.js'
+import { extraerIntencion } from './utils.js'
 
 const args = process.argv.slice(2)
-const option = args.shift()
 
-if (option === '--help' || option === '-H') {
+const firstOption = args[0]
+
+if (firstOption === '--help' || firstOption === '-H') {
     console.log(`
 Opciones:
 (npx make-new) project [nombreProyecto]:
@@ -21,22 +23,26 @@ Opciones:
 (npx make-new) < router | controller | dao | service | repository >:
     crea un archivo con el componente elegido (en su respectiva carpeta)
 `)
+    process.exit()
 }
 
-else if (option === 'project') {
+const intencion = extraerIntencion(args)
+
+if (firstOption === 'project') {
+    args.shift()
     createProject(...args)
-} else if (option === 'router') {
-    createRouter(...args, 'src')
-} else if (option === 'controller') {
-    createController(...args, 'src')
-} else if (option === 'repository') {
-    createRepository(...args, 'src')
-} else if (option === 'dao') {
-    createDao(...args, 'src')
-} else if (option === 'service') {
-    createService(...args, 'src')
-} else if (option === 'module') {
-    createModule(...args, 'src')
+} else if (intencion.componentType === 'router') {
+    createRouter(intencion)
+} else if (intencion.componentType === 'controller') {
+    createController(intencion)
+} else if (intencion.componentType === 'repository') {
+    createRepository(intencion)
+} else if (intencion.componentType === 'dao') {
+    createDao(intencion)
+} else if (intencion.componentType === 'service') {
+    createService(intencion)
+} else if (intencion.componentType === 'module') {
+    createModule(intencion)
 } else {
     console.log('opcion inválida. consulte la ayuda ( -H | --help ).')
 }
