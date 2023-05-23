@@ -1,9 +1,9 @@
 import {
+    createRouter,
     createController,
     createRepository,
-    createService,
-    createRouter,
     createDao,
+    createService,
     createModule,
 } from './createComponent.js'
 import { createProject } from './createProject.js'
@@ -24,19 +24,19 @@ Opciones:
 }
 
 else if (option === 'project') {
-    createProject(args)
+    createProject(...args)
 } else if (option === 'router') {
-    createRouter(...args)
+    createRouter(...args, 'src')
 } else if (option === 'controller') {
-    createController(...args)
+    createController(...args, 'src')
+} else if (option === 'repository') {
+    createRepository(...args, 'src')
 } else if (option === 'dao') {
-    createDao(...args)
+    createDao(...args, 'src')
+} else if (option === 'service') {
+    createService(...args, 'src')
 } else if (option === 'module') {
     createModule(...args, 'src')
-} else if (option === 'repository') {
-    createRepository(...args)
-} else if (option === 'service') {
-    createService(...args)
 } else {
     console.log('opcion inválida. consulte la ayuda ( -H | --help ).')
 }

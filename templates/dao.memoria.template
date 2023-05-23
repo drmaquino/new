@@ -16,44 +16,44 @@ function toPojo(object) {
   )
 }
 
-class {{ nombreMayuscula }}Dao {
-  #{{ nombreMinuscula }}
+class DaoMemoria {
+  #elements
   constructor() {
-    this.#{{ nombreMinuscula }} = []
+    this.#elements = []
   }
 
   create(element) {
     const pojo = toPojo(element)
-    this.#{{ nombreMinuscula }}.push(pojo)
+    this.#elements.push(pojo)
     return Promise.resolve(pojo)
   }
 
   readOne(criteria) {
-    const result = this.#{{ nombreMinuscula }}.find(matcher(criteria))
+    const result = this.#elements.find(matcher(criteria))
     if (!result) throw new Error('NOT FOUND')
     return Promise.resolve(result)
   }
 
   readMany(criteria) {
-    return Promise.resolve(this.#{{ nombreMinuscula }}.filter(matcher(criteria)))
+    return Promise.resolve(this.#elements.filter(matcher(criteria)))
   }
 
   updateOne(criteria, newData) {
-    const index = this.#{{ nombreMinuscula }}.findIndex(matcher(criteria))
+    const index = this.#elements.findIndex(matcher(criteria))
     if (index === -1) throw new Error('NOT FOUND')
-    this.#{{ nombreMinuscula }}[index] = toPojo({
-      ...this.#{{ nombreMinuscula }}[index],
+    this.#elements[index] = toPojo({
+      ...this.#elements[index],
       ...newData
     })
-    return Promise.resolve(this.#{{ nombreMinuscula }}[index])
+    return Promise.resolve(this.#elements[index])
   }
 
   updateMany(criteria, newData) {
     let modifiedCount = 0
-    for (let index = 0; index < this.#{{ nombreMinuscula }}.length; index++) {
-      if (matcher(criteria)(this.#{{ nombreMinuscula }}[index])) {
-        this.#{{ nombreMinuscula }}[index] = toPojo({
-          ...this.#{{ nombreMinuscula }}[index],
+    for (let index = 0; index < this.#elements.length; index++) {
+      if (matcher(criteria)(this.#elements[index])) {
+        this.#elements[index] = toPojo({
+          ...this.#elements[index],
           ...newData
         })
         modifiedCount++
@@ -63,18 +63,18 @@ class {{ nombreMayuscula }}Dao {
   }
 
   deleteOne(criteria) {
-    const index = this.#{{ nombreMinuscula }}.findIndex(matcher(criteria))
+    const index = this.#elements.findIndex(matcher(criteria))
     if (index === -1) throw new Error('NOT FOUND')
-    const deleted = this.#{{ nombreMinuscula }}[index]
-    this.#{{ nombreMinuscula }}.splice(index, 1)
+    const deleted = this.#elements[index]
+    this.#elements.splice(index, 1)
     return Promise.resolve(deleted)
   }
 
   deleteMany(criteria) {
-    let initialCount = this.#{{ nombreMinuscula }}.length
-    this.#{{ nombreMinuscula }} = this.#{{ nombreMinuscula }}.filter(e => !matcher(criteria)(e))
-    return Promise.resolve({ deletedCount: initialCount - this.#{{ nombreMinuscula }}.length })
+    let initialCount = this.#elements.length
+    this.#elements = this.#elements.filter(e => !matcher(criteria)(e))
+    return Promise.resolve({ deletedCount: initialCount - this.#elements.length })
   }
 }
 
-export const {{ nombreMinuscula }}Dao = new {{ nombreMayuscula }}Dao()
+export const {{ nombreMinuscula }}DaoMemoria = new DaoMemoria()

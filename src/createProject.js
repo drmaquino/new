@@ -1,5 +1,5 @@
 import fs from 'fs'
-import { createModule } from './createComponent.js'
+// import { createModule } from './createComponent.js'
 
 function findPath(folderName) {
   const fullPath = `../assets/${folderName}`
@@ -11,7 +11,7 @@ function curryClone(projectName) {
   }
 }
 
-export function createProject(args = []) {
+export function createProject(...args) {
 
   if (args[0] === '--help' || args[0] === '-H') {
     console.log(`
@@ -55,7 +55,7 @@ Opciones:
   clone('src/main.js')
   clone('src/app')
   clone('src/config')
-  createModule('xs', 'memoria', `${projectName}/src`)
+  clone('src/routers')
 
   if (args.includes('--frontend') || args.includes('-F')) {
     clone('public')

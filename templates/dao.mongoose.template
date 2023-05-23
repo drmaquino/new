@@ -8,48 +8,48 @@ function toPojo(object) {
   )
 }
 
-class {{ nombreMayuscula }}Dao {
-  #{{ nombreMinuscula }}Model
+class DaoMongoose {
+  #model
   constructor(mongooseModel) {
-    this.#{{ nombreMinuscula }}Model = mongooseModel
+    this.#model = mongooseModel
   }
 
   async create(element) {
-    return toPojo(await this.#{{ nombreMinuscula }}Model.create(element))
+    return toPojo(await this.#model.create(element))
   }
 
   async readOne(criteria) {
-    const result = await this.#{{ nombreMinuscula }}Model.findOne(criteria)
+    const result = await this.#model.findOne(criteria).lean()
     if (!result) throw new Error('NOT FOUND')
     return result
   }
 
   async readMany(criteria) {
-    return await this.#{{ nombreMinuscula }}Model.find(criteria).lean()
+    return await this.#model.find(criteria).lean()
   }
 
   async updateOne(criteria, newData) {
-    const modifiedUser = await this.#{{ nombreMinuscula }}Model.findOneAndUpdate(criteria, newData, { new: true })
+    const modifiedUser = await this.#model.findOneAndUpdate(criteria, newData, { new: true }).lean()
     if (!modifiedUser) throw new Error('NOT FOUND')
     return toPojo(modifiedUser)
   }
 
   async updateMany(criteria, newData) {
-    await this.#{{ nombreMinuscula }}Model.updateMany(criteria, newData)
+    await this.#model.updateMany(criteria, newData)
   }
 
   async deleteOne(criteria) {
-    const deletedUser = await this.#{{ nombreMinuscula }}Model.findOneAndDelete(criteria)
+    const deletedUser = await this.#model.findOneAndDelete(criteria).lean()
     if (!deletedUser) throw new Error('NOT FOUND')
     return toPojo(deletedUser)
   }
 
   async deleteMany(criteria) {
-    await this.#{{ nombreMinuscula }}Model.deleteMany(criteria)
+    await this.#model.deleteMany(criteria)
   }
 }
 
 const {{ nombreMinuscula }}Schema = new mongoose.Schema({}, { versionKey: false })
 const {{ nombreMinuscula }}Model = mongoose.model('{{ nombreMinuscula }}', {{ nombreMinuscula }}Schema)
 
-export const {{ nombreMinuscula }}Dao = new {{ nombreMayuscula }}Dao({{ nombreMinuscula }}Model)
+export const {{ nombreMinuscula }}DaoMongoose = new DaoMongoose({{ nombreMinuscula }}Model)

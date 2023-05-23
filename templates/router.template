@@ -1,17 +1,12 @@
 import { Router } from 'express'
-{{#if includeImports}}
+{{#if importController}}
 
-import {
-  handleGet,
-  handlePost,
-  handlePut,
-  handleDelete,
-} from '../controllers/{{ nombreMinuscula }}.controller.js'
+import * as {{ nombreMinuscula }}Controller from '../controllers/{{ nombreMinuscula }}.controller.js'
 {{/if}}
 
 export const {{ nombreMinuscula }}Router = Router()
 
-{{ nombreMinuscula }}Router.get('/:id?', {{#if includeImports}}handleGet{{else}}(req, res, next) => { }{{/if}})
-{{ nombreMinuscula }}Router.post('/', {{#if includeImports}}handlePost{{else}}(req, res, next) => { }{{/if}})
-{{ nombreMinuscula }}Router.put('/:id', {{#if includeImports}}handlePut{{else}}(req, res, next) => { }{{/if}})
-{{ nombreMinuscula }}Router.delete('/:id', {{#if includeImports}}handleDelete{{else}}(req, res, next) => { }{{/if}})
+{{ nombreMinuscula }}Router.get('/:id?', {{#if importController}}{{ nombreMinuscula }}Controller.handleGet{{else}}(req, res, next) => { }{{/if}})
+{{ nombreMinuscula }}Router.post('/', {{#if importController}}{{ nombreMinuscula }}Controller.handlePost{{else}}(req, res, next) => { }{{/if}})
+{{ nombreMinuscula }}Router.put('/:id', {{#if importController}}{{ nombreMinuscula }}Controller.handlePut{{else}}(req, res, next) => { }{{/if}})
+{{ nombreMinuscula }}Router.delete('/:id', {{#if importController}}{{ nombreMinuscula }}Controller.handleDelete{{else}}(req, res, next) => { }{{/if}})

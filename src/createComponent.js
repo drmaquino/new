@@ -22,60 +22,103 @@ function createFile(dirPath, filePath, content) {
   fs.writeFileSync(`${dirPath}/${filePath}`, content)
 }
 
-function createContext(nombreRecurso, includeImports = true) {
-  return {
-    nombreMayuscula: capitalize(nombreRecurso),
-    nombreMinuscula: decapitalize(nombreRecurso),
-    includeImports
-  }
+function safeWriteFileSync(path, content) {
+  const lastBarIndex = path.lastIndexOf('/')
+  const dirPath = path.slice(0, lastBarIndex)
+  fs.mkdirSync(dirPath, { recursive: true })
+  fs.writeFileSync(path, content)
 }
 
 export function createRouter(nombreRecurso, path = '.', importController = false) {
-  const context = createContext(nombreRecurso)
-  const text = routerTemplate(context)
-  const componentType = 'routers'
-  createFile(`${path}/${componentType}`, `${context.nombreMinuscula}.router.js`, text)
-}
-
-export function createController(nombreRecurso, path = '.', importDao = false, daoType = 'memoria') {
-  const nombreMinuscula = decapitalize(nombreRecurso)
-  const text = controllerTemplate({ nombreMinuscula, importDao, daoType })
-  fs.mkdirSync(`${path}/controllers`, { recursive: true })
-  fs.writeFileSync(`${path}/controllers/${nombreMinuscula}.controller.js`, text)
-}
-
-export function createDao(nombreRecurso, soporte = 'memoria', path = '.') {
 
   const nombreMayuscula = capitalize(nombreRecurso)
   const nombreMinuscula = decapitalize(nombreRecurso)
 
-  const componentType = 'daos'
-  const daoTemplateUrl = new URL(`../templates/dao.${soporte}.template`, import.meta.url)
-  const destinationFilename = `${nombreMinuscula}.dao.${soporte}.js`
+  const text = routerTemplate({
+    nombreMayuscula,
+    nombreMinuscula,
+    importController
+  })
+  const componentType = 'routers'
+  safeWriteFileSync(`${path}/${componentType}/${nombreMinuscula}.router.js`, text)
+}
+
+export function createController(nombreRecurso, path = '.', importRepository = false, importDao = false, daoType = 'memoria') {
+
+  const nombreMinuscula = decapitalize(nombreRecurso)
+
+  const text = controllerTemplate({
+    nombreMinuscula,
+    importRepository,
+    importDao,
+    daoType
+  })
+
+  const componentType = 'controllers'
+  safeWriteFileSync(`${path}/${componentType}/${nombreMinuscula}.controller.js`, text)
+}
+
+export function createRepository(nombreRecurso, path = '.', daoType = 'memoria') {
+
+  const nombreMayuscula = capitalize(nombreRecurso)
+  const nombreMinuscula = decapitalize(nombreRecurso)
+  const daoTypeLower = decapitalize(daoType)
+  const daoTypeUpper = capitalize(daoType)
+
+  const text = repositoryTemplate({
+    nombreMayuscula,
+    nombreMinuscula,
+    daoTypeLower,
+    daoTypeUpper
+  })
+
+  const componentType = 'repositories'
+  safeWriteFileSync(`${path}/${componentType}/${nombreMinuscula}.repository.js`, text)
+}
+
+export function createDao(nombreRecurso, path = '.', daoType = 'memoria') {
+
+  const nombreMayuscula = capitalize(nombreRecurso)
+  const nombreMinuscula = decapitalize(nombreRecurso)
+
+  const daoTemplateUrl = new URL(`../templates/dao.${daoType}.template`, import.meta.url)
+  const destinationFilename = `${nombreMinuscula}.dao.${daoType}.js`
 
   const daoTemplate = Handlebars.compile(fs.readFileSync(daoTemplateUrl, 'utf-8'))
-  const text = daoTemplate(createContext(nombreRecurso))
-  createFile(`${path}/${componentType}`, destinationFilename, text)
+
+  const text = daoTemplate({
+    nombreMayuscula,
+    nombreMinuscula
+  })
+
+  const componentType = 'daos'
+  safeWriteFileSync(`${path}/${componentType}/${destinationFilename}`, text)
 }
 
-export function createService(nombreRecurso, path = '.') {
-  const context = createContext(nombreRecurso)
-  const text = serviceTemplate(context)
+export function createService(nombreRecurso, path = '.', importRepository = false) {
+
+  const nombreMayuscula = capitalize(nombreRecurso)
+  const nombreMinuscula = decapitalize(nombreRecurso)
+
+  const text = serviceTemplate({
+    nombreMayuscula,
+    nombreMinuscula,
+    importRepository
+  })
+
   const componentType = 'services'
-  createFile(`${path}/${componentType}`, `${context.nombreMinuscula}.service.js`, text)
+  safeWriteFileSync(`${path}/${componentType}/${nombreMinuscula}.service.js`, text)
 }
 
-export function createRepository(nombreRecurso, path = '.', importRepository = false) { //TODO: agregar importar dao!
-  const context = createContext(nombreRecurso)
-  const text = repositoryTemplate(createContext(nombreRecurso))
-  const componentType = 'repositories'
-  createFile(`${path}/${componentType}`, `${context.nombreMinuscula}.repository.js`, text)
-}
-
-export function createModule(nombreRecurso, daoType = 'memoria', path = '.') {
-  const modulePath = `${path}`
-  fs.mkdirSync(modulePath, { recursive: true })
+export function createModule(nombreRecurso, modulePath = '.', daoType = 'memoria') {
   createRouter(nombreRecurso, modulePath, true)
-  createController(nombreRecurso, modulePath, true, daoType)
-  createDao(nombreRecurso, daoType, modulePath)
+  createController(nombreRecurso, modulePath, true)
+  createRepository(nombreRecurso, modulePath, daoType)
+  createDao(nombreRecurso, modulePath, daoType)
+
+  fs.appendFileSync(
+    `${modulePath}/routers/api.router.js`, `
+import { ${nombreRecurso}Router } from './${nombreRecurso}.router.js'
+apiRouter.use('/${nombreRecurso}', ${nombreRecurso}Router)
+`)
 }

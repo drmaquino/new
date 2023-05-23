@@ -1,8 +1,8 @@
 import express from 'express'
-import { xsRouter } from '../routers/xs.router.js'
+import { apiRouter } from '../routers/api.router.js'
 
 export const app = express()
 
 app.use(express.json())
 
-app.use('/', xsRouter)
+app.use('/api', apiRouter)
