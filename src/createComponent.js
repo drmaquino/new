@@ -8,7 +8,7 @@ import {
 } from './utils.js'
 
 export function createRouter({ entityName, path, componentType = 'router' }) {
-  log({ location: 'createRouter', arguments: arguments[0] })
+  log({ location: 'createRouter', arguments: { entityName, path, componentType } })
 
   const routerTemplateUrl = new URL(`../templates/${componentType}.template`, import.meta.url)
   const routerTemplate = Handlebars.compile(fs.readFileSync(routerTemplateUrl, 'utf-8'))
@@ -47,8 +47,8 @@ apiRouter.use('/${entityName}', ${entityName}Router)
 
 }
 
-export function createController({ entityName, path, componentType = 'controller', daoType }) {
-  log({ location: 'createController', arguments: arguments[0] })
+export function createController({ entityName, path, componentType = 'controller', persistenceType }) {
+  log({ location: 'createController', arguments: { entityName, path, componentType, persistenceType } })
 
   const controllerTemplateUrl = new URL(`../templates/${componentType}.template`, import.meta.url)
   const controllerTemplate = Handlebars.compile(fs.readFileSync(controllerTemplateUrl, 'utf-8'))
@@ -57,7 +57,7 @@ export function createController({ entityName, path, componentType = 'controller
 
   log({ location: 'createController', importRepository: importRepository ? true : 'not found' })
 
-  const importDao = !importRepository && pathContainsFile(`${path}/daos/`, `${entityName}.dao.${daoType}.js`)
+  const importDao = !importRepository && pathContainsFile(`${path}/daos/`, `${entityName}.dao.${persistenceType}.js`)
 
   log({
     location: 'createController',
@@ -73,7 +73,7 @@ export function createController({ entityName, path, componentType = 'controller
     entityName,
     importRepository,
     importDao,
-    daoType
+    persistenceType
   })
 
   const componentsFolder = 'controllers'
@@ -87,19 +87,19 @@ export function createController({ entityName, path, componentType = 'controller
   safeWriteFileSync(newControllerFilepath, text)
 }
 
-export function createRepository({ entityName, path, componentType = 'repository', daoType }) {
-  log({ location: 'createRepository', arguments: arguments[0] })
+export function createRepository({ entityName, path, componentType = 'repository', persistenceType }) {
+  log({ location: 'createRepository', arguments: { entityName, path, componentType, persistenceType } })
 
   const repositoryTemplateUrl = new URL('../templates/repository.template', import.meta.url)
   const repositoryTemplate = Handlebars.compile(fs.readFileSync(repositoryTemplateUrl, 'utf-8'))
 
-  const daoFound = pathContainsFile(`${path}/daos/`, `${entityName}.dao.${daoType}.js`)
+  const daoFound = pathContainsFile(`${path}/daos/`, `${entityName}.dao.${persistenceType}.js`)
   if (!daoFound)
     throw new Error(`you need a ${entityName} dao to create a ${entityName} repository`)
 
   const text = repositoryTemplate({
     entityName,
-    daoType
+    persistenceType
   })
 
   const componentsFolder = 'repositories'
@@ -126,11 +126,11 @@ export function createRepository({ entityName, path, componentType = 'repository
   }
 }
 
-export function createDao({ entityName, path, componentType = 'dao', daoType }) {
-  log({ location: 'createDao', arguments: arguments[0] })
+export function createDao({ entityName, path, componentType = 'dao', persistenceType }) {
+  log({ location: 'createDao', arguments: { entityName, path, componentType, persistenceType } })
 
-  const daoTemplateUrl = new URL(`../templates/${componentType}.${daoType}.template`, import.meta.url)
-  const destinationFilename = `${entityName}.${componentType}.${daoType}.js`
+  const daoTemplateUrl = new URL(`../templates/${componentType}.${persistenceType}.template`, import.meta.url)
+  const destinationFilename = `${entityName}.${componentType}.${persistenceType}.js`
 
   const daoTemplate = Handlebars.compile(fs.readFileSync(daoTemplateUrl, 'utf-8'))
 
@@ -148,11 +148,11 @@ export function createDao({ entityName, path, componentType = 'dao', daoType }) 
   })
   safeWriteFileSync(newDaoFilepath, text)
 
-  if (!pathContainsFile(`${path}/${componentsFolder}/`, `Dao${capitalize(daoType)}.js`)) {
-    const genericDaoTemplateFilepath = `../templates/${componentType}.${daoType}.generic.template`
+  if (!pathContainsFile(`${path}/${componentsFolder}/`, `Dao${capitalize(persistenceType)}.js`)) {
+    const genericDaoTemplateFilepath = `../templates/${componentType}.${persistenceType}.generic.template`
     const genericDaoTextUrl = new URL(genericDaoTemplateFilepath, import.meta.url)
     const genericDaoText = fs.readFileSync(genericDaoTextUrl, 'utf-8')
-    const genericDaoFilepath = `${path}/${componentsFolder}/Dao${capitalize(daoType)}.js`
+    const genericDaoFilepath = `${path}/${componentsFolder}/Dao${capitalize(persistenceType)}.js`
 
     log({
       location: 'createDao',
@@ -164,7 +164,7 @@ export function createDao({ entityName, path, componentType = 'dao', daoType }) 
 }
 
 export function createService({ entityName, path, importRepository = false }) {
-  log({ location: 'createService', arguments: arguments[0] })
+  log({ location: 'createService', arguments: { entityName, path, importRepository } })
 
   const serviceTemplateUrl = new URL('../templates/service.template', import.meta.url)
   const serviceTemplate = Handlebars.compile(fs.readFileSync(serviceTemplateUrl, 'utf-8'))
@@ -178,11 +178,11 @@ export function createService({ entityName, path, importRepository = false }) {
   safeWriteFileSync(`${path}/${componentType}/${entityName}.service.js`, text)
 }
 
-export function createModule({ entityName, path, daoType }) {
-  log({ location: 'createModule', arguments: arguments[0] })
+export function createModule({ entityName, path, persistenceType }) {
+  log({ location: 'createModule', arguments: { entityName, path, persistenceType } })
 
-  createDao({ entityName, path, daoType })
-  createRepository({ entityName, path, daoType })
-  createController({ entityName, path, daoType })
+  createDao({ entityName, path, persistenceType })
+  createRepository({ entityName, path, persistenceType })
+  createController({ entityName, path, persistenceType })
   createRouter({ entityName, path })
 }

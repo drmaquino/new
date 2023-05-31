@@ -1,5 +1,5 @@
 {{#if importDao}}
-import { {{ decapitalized entityName }}Dao{{ capitalized daoType }} as {{ decapitalized entityName }}Dao } from '../daos/{{ decapitalized entityName }}.dao.{{ daoType }}.js'
+import { {{ decapitalized entityName }}Dao{{ capitalized persistenceType }} as {{ decapitalized entityName }}Dao } from '../daos/{{ decapitalized entityName }}.dao.{{ persistenceType }}.js'
 
 {{else if importRepository}}
 import { {{ decapitalized entityName }}Repository } from '../repositories/{{ decapitalized entityName }}.repository.js'

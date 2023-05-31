@@ -1,77 +1,123 @@
 import fs from 'fs'
-// import { createModule } from './createComponent.js'
+import { log, safeWriteFileSync } from './utils.js'
 
-function findPath(folderName) {
-  const fullPath = `../assets/${folderName}`
-  return new URL(fullPath, import.meta.url)
-}
-function curryClone(projectName) {
-  return function (path) {
-    fs.cpSync(findPath(path), `${projectName}/${path}`, { recursive: true })
+const packageJson = {
+  type: "module",
+  name: undefined,
+  version: "1.0.0",
+  main: "src/main.js",
+  scripts: {
+    start: "node .",
+    test: "nodemon ."
+  },
+  keywords: [],
+  author: "drmaquino",
+  license: "ISC",
+  description: "",
+  dependencies: {
+    express: "latest"
+  },
+  devDependencies: {
+    nodemon: "latest",
+    "@types/node": "latest",
+    "@types/express": "latest",
   }
 }
 
-export function createProject(...args) {
+export function createProject({ projectName, projectExtras: { frontend, dotenv, mocha, mongoose } }) {
 
-  if (args[0] === '--help' || args[0] === '-H') {
-    console.log(`
-Opciones:
---frontend      |  -F
-    crea también ./public y ./views
---test          |  -T
-    crea también ./test e instala mocha@latest
---environment   |  -E
-    crea también .env e instala dotenv@latest
-    `)
-    process.exit()
-  }
-
-  let projectName
-  if (args.length === 0 || args[0].startsWith('-')) {
-    projectName = `server-${Date.now()}`
-  } else {
-    projectName = args[0]
-    args = args.slice(1)
-  }
-
-  try {
-    fs.mkdirSync(projectName)
-  } catch (error) {
-    if (error.message?.startsWith('EEXIST')) {
-      projectName += `${Date.now()}`
-      fs.mkdirSync(projectName)
-    } else {
-      throw error
+  log({
+    location: 'createProject',
+    arguments: {
+      projectName,
+      projectExtras: {
+        frontend, dotenv, mocha, mongoose
+      }
     }
+  })
+
+  packageJson.name = projectName
+
+  const mainJsTxt = `import { PORT } from './config/server.config.js'
+import { app } from './app/app.js'
+
+app.listen(PORT, () => { console.log(\`escuchando en puerto $\{PORT\}\`) })
+`
+  safeWriteFileSync(`${projectName}/src/main.js`, mainJsTxt)
+
+  const appJsTxt = `import express from 'express'
+import { apiRouter } from '../routers/api.router.js'
+
+export const app = express()
+
+app.use(express.json())
+
+app.use((req, res, next) => { console.log(\`(\${req.method}) \${req.url}\`); next() })
+
+app.use('/api', apiRouter)
+`
+
+  safeWriteFileSync(`${projectName}/src/app/app.js`, appJsTxt)
+
+  const serverConfigJsTxt = `export const PORT = parseInt(process.env.PORT || '8080')`
+  safeWriteFileSync(`${projectName}/src/config/server.config.js`, serverConfigJsTxt)
+
+  const apiRouterJsTxt = `import { Router } from 'express'
+
+export const apiRouter = Router()
+
+`
+
+  safeWriteFileSync(`${projectName}/src/routers/api.router.js`, apiRouterJsTxt)
+
+  if (frontend) {
+    safeWriteFileSync(`${projectName}/public/css/style.css`, '* { }')
+    safeWriteFileSync(`${projectName}/public/js/index.js`, '')
+
+    const sampleHtml = fs.readFileSync(new URL('../templates/html.template', import.meta.url), 'utf-8')
+    safeWriteFileSync(`${projectName}/views/index.html`, sampleHtml)
   }
 
-  const packageJsonObj = JSON.parse(fs.readFileSync(findPath('package.json'), 'utf-8'))
-  packageJsonObj.name = projectName
+  if (mocha) {
+    const sampleIntegrationTest = `describe('app', () => {
+    it('should', () => {
+        /*...*/
+    })
+})
+`
+    safeWriteFileSync(`${projectName}/test/app/app.test.js`, sampleIntegrationTest)
 
-  fs.mkdirSync(`${projectName}/src`)
+    const sampleUnitTest = `describe('service', () => {
+    it('should...', () => {
+        /*...*/
+    })
+})
+`
+    safeWriteFileSync(`${projectName}/test/service/service.test.js`, sampleUnitTest)
 
-  const clone = curryClone(projectName)
+    packageJson.devDependencies.mocha = 'latest'
+    packageJson.devDependencies['@types/mocha'] = 'latest'
 
-  clone('src/main.js')
-  clone('src/app')
-  clone('src/config')
-  clone('src/routers')
-
-  if (args.includes('--frontend') || args.includes('-F')) {
-    clone('public')
-    clone('views')
+    packageJson.scripts.test = 'mocha --recursive'
   }
 
-  if (args.includes('--test') || args.includes('-T')) {
-    clone('test')
-    packageJsonObj.devDependencies.mocha = 'latest'
-    packageJsonObj.scripts.test = 'mocha --recursive'
+  if (dotenv) {
+    safeWriteFileSync(`${projectName}/.env`, 'PORT=8080')
+
+    packageJson.dependencies.dotenv = 'latest'
   }
 
-  if (args.includes('--environment') || args.includes('-E')) {
-    fs.writeFileSync(`${projectName}/.env`, '')
-    packageJsonObj.dependencies.dotenv = 'latest'
+  if (mongoose) {
+    safeWriteFileSync(`${projectName}/src/config/mongodb.config.js`,
+      `export const CNX_STR = process.env.CNX_STR || 'mongodb://localhost'`)
+    packageJson.dependencies.mongoose = 'latest'
+
+    fs.appendFileSync(`${projectName}/src/main.js`, `import mongoose from 'mongoose'
+import { CNX_STR } from './config/mongodb.config.js'
+await mongoose.connect(CNX_STR)
+console.log(\`conectado a base de datos en '\${CNX_STR}'\`)`
+    )
   }
 
-  fs.writeFileSync(`${projectName}/package.json`, JSON.stringify(packageJsonObj, null, 2))
+  safeWriteFileSync(`${projectName}/package.json`, JSON.stringify(packageJson, null, 2))
 }

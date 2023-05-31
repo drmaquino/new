@@ -1,5 +1,0 @@
-describe('service', () => {
-    it('should...', () => {
-        /*...*/
-    })
-})

@@ -2,34 +2,82 @@ import fs from 'node:fs'
 import Handlebars from 'handlebars'
 
 export function extraerIntencion(words) {
-  const daoTypes = ['memoria', 'mongoose']
-  const componentTypes = ['router', 'controller', 'service', 'repository', 'dao', 'project', 'module']
+  const excluded = ['con', 'y', 'de', 'para', '--verbose']
+  const helpFlags = ['help']
+  const projectFlags = ['project']
+  const projectExtrasFlags = ['frontend', 'mocha', 'dotenv', 'mongoose']
+  const persistenceTypes = ['memoria', 'mongoose']
+  const componentTypes = ['module', 'router', 'controller', 'service', 'repository', 'dao']
 
   const result = {
-    daoType: 'memoria',
-    path: './src',
+    help: false,
+    /***/
+    project: false,
+    projectName: '',
+    projectLibs: [],
+    projectExtras: {
+      frontend: false,
+      dotenv: false,
+      mocha: false,
+      mongoose: false,
+    },
+    /***/
+    component: false,
+    componentType: '',
     entityName: '',
-    componentType: ''
+    /***/
+    persistenceType: 'memoria',
+    path: './src',
   }
 
   words = words.map(w => w.toLowerCase())
 
   for (const word of words) {
-    if (daoTypes.includes(word)) {
-      result.daoType = word
-    } else if (componentTypes.includes(word)) {
+    if (excluded.includes(word)) {
+      continue
+    }
+
+    if (helpFlags.includes(word)) {
+      result.help = true
+    }
+    else if (projectFlags.includes(word)) {
+      result.project = true
+    }
+    else if (componentTypes.includes(word)) {
+      result.component = true
       result.componentType = word
-    } else if (word.startsWith('./')) {
+    }
+    else if (persistenceTypes.includes(word)) {
+      result.persistenceType = word
+    }
+    else if (projectExtrasFlags.includes(word)) {
+      // @ts-ignore
+      result.projectExtras[word] = true
+    }
+    else if (word.startsWith('./')) {
       result.path = word
-    } else {
+    }
+    else {
       result.entityName = word
     }
   }
 
-  if (!result.entityName) throw new Error('falta el nombre de la entidad')
-  if (!result.componentType) throw new Error('falta el tipo de commponente')
-  if (!result.daoType) throw new Error('falta el tipo de persistencia')
-  if (!result.path) throw new Error('falta la ruta')
+  if (result.project) {
+    result.projectName = result.entityName
+    //@ts-ignore
+    delete result.entityName
+
+    if (!result.projectName) {
+      result.projectName = `server-${Date.now()}`
+    }
+
+    if (result.persistenceType === 'mongoose') {
+      result.projectExtras.mongoose = true
+    }
+  }
+
+  if (result.component && !result.entityName) throw new Error('falta el nombre de la entidad')
+  if (result.component && !result.componentType) throw new Error('falta el tipo de componente')
 
   return result
 }
