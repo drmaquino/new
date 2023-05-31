@@ -119,11 +119,11 @@ export function pathContainsFile(path, filename) {
 //----------------------------------------------------------------
 
 export function capitalize(word) {
-  return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+  return word.charAt(0).toUpperCase() + word.slice(1)
 }
 
 export function decapitalize(word) {
-  return word.toLowerCase()
+  return word.charAt(0).toLowerCase() + word.slice(1)
 }
 
 //----------------------------------------------------------------
