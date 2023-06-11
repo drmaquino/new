@@ -1,29 +1,32 @@
 {{#if importDao}}
-import { {{ decapitalized entityName }}Dao{{ capitalized persistenceType }} as {{ decapitalized entityName }}Dao } from '../daos/{{ decapitalized entityName }}.dao.{{ persistenceType }}.js'
-
+import { {{ pluralized entityName }}Dao{{ capitalized persistenceType }} as {{ pluralized entityName }}Dao } from '../daos/{{ pluralized entityName }}.dao.{{ persistenceType }}.js'
 {{else if importRepository}}
-import { {{ decapitalized entityName }}Repository } from '../repositories/{{ decapitalized entityName }}.repository.js'
+import { {{ pluralized entityName }}Repository } from '../repositories/{{ pluralized entityName }}.repository.js'
+
+{{/if}}
+{{#if importModel}}
+import { {{ capitalized entityName }} } from '../models/{{ capitalized entityName }}.model.js'
 
 {{/if}}
 export async function handleGet(req, res, next) {
   try {
     if (req.params.id) {
       {{#if importDao}}
-      const buscado = await {{ decapitalized entityName }}Dao.readOne({ id: req.params.id })
+      const buscado = await {{ pluralized entityName }}Dao.readOne({ id: req.params.id })
       res.json(buscado)
       {{else if importRepository}}
-      const buscado = await {{ decapitalized entityName }}Repository.readOne({ id: req.params.id })
+      const buscado = await {{ pluralized entityName }}Repository.readOne({ id: req.params.id })
       res.json(buscado)
       {{else}}
       res.send('peticion "getById" recibida!')  
       {{/if}}
     } else {
       {{#if importDao}}
-      const {{ decapitalized entityName }} = await {{ decapitalized entityName }}Dao.readMany(req.query)
-      res.json({{ decapitalized entityName }})
+      const {{ pluralized entityName }} = await {{ pluralized entityName }}Dao.readMany(req.query)
+      res.json({{ pluralized entityName }})
       {{else if importRepository}}
-      const {{ decapitalized entityName }} = await {{ decapitalized entityName }}Repository.readMany(req.query)
-      res.json({{ decapitalized entityName }})
+      const {{ pluralized entityName }} = await {{ pluralized entityName }}Repository.readMany(req.query)
+      res.json({{ pluralized entityName }})
       {{else}}
       res.send('peticion "get" recibida!')
       {{/if}}
@@ -36,10 +39,10 @@ export async function handleGet(req, res, next) {
 export async function handlePost(req, res, next) {
   try {
     {{#if importDao}}
-    const creado = await {{ decapitalized entityName }}Dao.create(req.body)
+    const creado = await {{ pluralized entityName }}Dao.create({{#if importModel}}new {{capitalized entityName}}(req.body){{else}}req.body{{/if}})
     res.status(201).json(creado)
     {{else if importRepository}}
-    const creado = await {{ decapitalized entityName }}Repository.create(req.body)
+    const creado = await {{ pluralized entityName }}Repository.create({{#if importModel}}new {{capitalized entityName}}(req.body){{else}}req.body{{/if}})
     res.status(201).json(creado)
     {{else}}
     res.send('peticion "post" recibida!')
@@ -52,10 +55,10 @@ export async function handlePost(req, res, next) {
 export async function handlePut(req, res, next) {
   try {
     {{#if importDao}}
-    const actualizado = await {{ decapitalized entityName }}Dao.updateOne(req.params.id, req.body)
+    const actualizado = await {{ pluralized entityName }}Dao.updateOne(req.params.id, req.body)
     res.json(actualizado)
     {{else if importRepository}}
-    const actualizado = await {{ decapitalized entityName }}Repository.updateOne(req.params.id, req.body)
+    const actualizado = await {{ pluralized entityName }}Repository.updateOne(req.params.id, req.body)
     res.json(actualizado)
     {{else}}
     res.send('peticion "put:id" recibida!')
@@ -68,10 +71,10 @@ export async function handlePut(req, res, next) {
 export async function handleDelete(req, res, next) {
   try {
     {{#if importDao}}
-    const borrado = await {{ decapitalized entityName }}Dao.deleteOne(req.params.id)
+    const borrado = await {{ pluralized entityName }}Dao.deleteOne(req.params.id)
     res.json(borrado)
     {{else if importRepository}}
-    const borrado = await {{ decapitalized entityName }}Repository.deleteOne(req.params.id)
+    const borrado = await {{ pluralized entityName }}Repository.deleteOne(req.params.id)
     res.json(borrado)
     {{else}}
     res.send('peticion "delete:id" recibida!')

@@ -1,4 +1,4 @@
-import { {{ decapitalized entityName }}Dao{{ capitalized persistenceType }} } from '../daos/{{ decapitalized entityName }}.dao.{{ decapitalized persistenceType }}.js'
+import { {{ pluralized entityName }}Dao{{ capitalized persistenceType }} } from '../daos/{{ pluralized entityName }}.dao.{{ decapitalized persistenceType }}.js'
 import { GenericRepository } from './GenericRepository.js'
 
-export const {{ decapitalized entityName }}Repository = new GenericRepository({{ decapitalized entityName }}Dao{{ capitalized persistenceType }})
+export const {{ pluralized entityName }}Repository = new GenericRepository({{ pluralized entityName }}Dao{{ capitalized persistenceType }})

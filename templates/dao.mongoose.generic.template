@@ -30,9 +30,9 @@ export class DaoMongoose {
   }
 
   async updateOne(criteria, newData) {
-    const modifiedUser = await this.#model.findOneAndUpdate(criteria, newData, { new: true, projection: { _id: 0 } }).lean()
-    if (!modifiedUser) throw new Error('NOT FOUND')
-    return modifiedUser
+    const updated = await this.#model.findOneAndUpdate(criteria, newData, { new: true, projection: { _id: 0 } }).lean()
+    if (!updated) throw new Error('NOT FOUND')
+    return updated
   }
 
   async updateMany(criteria, newData) {
@@ -40,9 +40,9 @@ export class DaoMongoose {
   }
 
   async deleteOne(criteria) {
-    const deletedUser = await this.#model.findOneAndDelete(criteria, { projection: { _id: 0 } }).lean()
-    if (!deletedUser) throw new Error('NOT FOUND')
-    return deletedUser
+    const deleted = await this.#model.findOneAndDelete(criteria, { projection: { _id: 0 } }).lean()
+    if (!deleted) throw new Error('NOT FOUND')
+    return deleted
   }
 
   async deleteMany(criteria) {

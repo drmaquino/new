@@ -5,12 +5,13 @@ import {
     createDao,
     createService,
     createModule,
+    createModel,
+    createProject
 } from './createComponent.js'
-import { createProject } from './createProject.js'
-import { extraerIntencion } from './utils.js'
+import { extraerIntencion, logInfo, logDebug } from './utils.js'
 
 const intencion = extraerIntencion(process.argv.slice(2))
-console.log(intencion)
+logDebug(intencion)
 
 if (intencion.help) {
     showHelp()
@@ -35,6 +36,9 @@ else if (intencion.componentType === 'service') {
 }
 else if (intencion.componentType === 'module') {
     createModule(intencion)
+}
+else if (intencion.componentType === 'model') {
+    createModel(intencion)
 }
 else {
     console.log(`opcion inválida. consulte la ayuda ( 'make-new help' ).`)

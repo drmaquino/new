@@ -1,5 +1,5 @@
-class {{ capitalized entityName }}Service {
+class {{ pluralizedCaps entityName }}Service {
   constructor() { }
 }
 
-export const {{ decapitalized entityName }}Service = new {{ capitalized entityName }}Service()
+export const {{ pluralized entityName }}Service = new {{ pluralizedCaps entityName }}Service()

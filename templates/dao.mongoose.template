@@ -4,4 +4,4 @@ import { DaoMongoose } from './DaoMongoose.js'
 const {{ decapitalized entityName }}Schema = new mongoose.Schema({}, { versionKey: false })
 const {{ decapitalized entityName }}Model = mongoose.model('{{ decapitalized entityName }}', {{ decapitalized entityName }}Schema)
 
-export const {{ decapitalized entityName }}DaoMongoose = new DaoMongoose({{ decapitalized entityName }}Model)
+export const {{ pluralized entityName }}DaoMongoose = new DaoMongoose({{ decapitalized entityName }}Model)

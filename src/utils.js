@@ -7,7 +7,7 @@ export function extraerIntencion(words) {
   const projectFlags = ['project']
   const projectExtrasFlags = ['frontend', 'mocha', 'dotenv', 'mongoose']
   const persistenceTypes = ['memoria', 'mongoose']
-  const componentTypes = ['module', 'router', 'controller', 'service', 'repository', 'dao']
+  const componentTypes = ['module', 'router', 'controller', 'service', 'repository', 'dao', 'model']
 
   const result = {
     help: false,
@@ -30,32 +30,30 @@ export function extraerIntencion(words) {
     path: './src',
   }
 
-  words = words.map(w => w.toLowerCase())
-
   for (const word of words) {
     if (excluded.includes(word)) {
       continue
     }
 
-    if (helpFlags.includes(word)) {
+    if (helpFlags.includes(word.toLowerCase())) {
       result.help = true
     }
-    else if (projectFlags.includes(word)) {
+    else if (projectFlags.includes(word.toLowerCase())) {
       result.project = true
     }
-    else if (componentTypes.includes(word)) {
+    else if (componentTypes.includes(word.toLowerCase())) {
       result.component = true
-      result.componentType = word
+      result.componentType = word.toLowerCase()
     }
-    else if (persistenceTypes.includes(word)) {
-      result.persistenceType = word
+    else if (persistenceTypes.includes(word.toLowerCase())) {
+      result.persistenceType = word.toLowerCase()
     }
-    else if (projectExtrasFlags.includes(word)) {
+    else if (projectExtrasFlags.includes(word.toLowerCase())) {
       // @ts-ignore
-      result.projectExtras[word] = true
+      result.projectExtras[word.toLowerCase()] = true
     }
     else if (word.startsWith('./')) {
-      result.path = word
+      result.path = word.toLowerCase()
     }
     else {
       result.entityName = word
@@ -90,11 +88,19 @@ if (process.argv.slice(2).includes('--verbose')) {
   VERBOSE_MODE = true
 }
 
-export function log(context) {
+function log(context) {
+  const location = context.location
+  delete context.location
+  console.log(`${new Date().toLocaleString()}: [${location}] ${inspect(context, false, 10)}`)
+}
+
+export function logInfo(context) {
+  log(context)
+}
+
+export function logDebug(context) {
   if (VERBOSE_MODE) {
-    const location = context.location
-    delete context.location
-    console.log(`${new Date().toLocaleString()}: [${location}] ${inspect(context, false, 10)}`)
+    log(context)
   }
 }
 
@@ -105,6 +111,19 @@ export function safeWriteFileSync(path, content) {
   const dirPath = path.slice(0, lastBarIndex)
   fs.mkdirSync(dirPath, { recursive: true })
   fs.writeFileSync(path, content)
+}
+
+export function appendLineToFileTopSync(path, content) {
+  const rows = fs.readFileSync(path).toString().split('\n')
+  rows.unshift(content)
+  fs.writeFileSync(path, rows.join('\n'))
+}
+
+// TODO: usar para algo!
+export function appendLineToFileBottom(path, content) {
+  const rows = fs.readFileSync(path).toString().split('\n')
+  rows.push(content)
+  fs.writeFileSync(path, rows.join('\n'))
 }
 
 export function pathContainsFile(path, filename) {
@@ -126,6 +145,12 @@ export function decapitalize(word) {
   return word.charAt(0).toLowerCase() + word.slice(1)
 }
 
+export function pluralize(palabra) {
+  if (palabra.endsWith('s')) return palabra
+  if (['a', 'e', 'i', 'o', 'u'].includes(palabra[palabra.length - 1])) return palabra + 's'
+  return palabra + 'es'
+}
+
 //----------------------------------------------------------------
 
 Handlebars.registerHelper('capitalized', function (word) {
@@ -134,6 +159,14 @@ Handlebars.registerHelper('capitalized', function (word) {
 
 Handlebars.registerHelper('decapitalized', function (word) {
   return decapitalize(word)
+})
+
+Handlebars.registerHelper('pluralized', function (word) {
+  return pluralize(word)
+})
+
+Handlebars.registerHelper('pluralizedCaps', function (word) {
+  return pluralize(capitalize(word))
 })
 
 export { Handlebars }
