@@ -41,9 +41,10 @@ export function createRouter({
 
   const apiRouterFilepath = `${path}/${componentsFolder}/api.${componentType}.js`
 
-  appendLineToFileTopSync(apiRouterFilepath, `import { ${pluralize(entityName)}Router } from './${pluralize(entityName)}.${componentType}.js'`)
-  fs.appendFileSync(apiRouterFilepath, `apiRouter.use('/${pluralize(entityName)}', ${pluralize(entityName)}Router)
-`)
+  if (pathContainsFile(apiRouterFilepath)) {
+    appendLineToFileTopSync(apiRouterFilepath, `import { ${pluralize(entityName)}Router } from './${pluralize(entityName)}.${componentType}.js'`)
+    fs.appendFileSync(apiRouterFilepath, `apiRouter.use('/${pluralize(entityName)}', ${pluralize(entityName)}Router)` + '\n')
+  }
 
   logInfo({
     location: 'createRouter',
@@ -205,7 +206,8 @@ export class ${capitalize(entityName)} extends String {
   constructor() {
     super(randomUUID())
   }
-}`
+}
+`
 
   const newIdModelFilePath = `${path}/${componentsFolder}/${capitalize(entityName)}.${componentType}.js`
 
@@ -235,6 +237,7 @@ export class ${capitalize(entityName)} {
   }
 }
 `
+
   //TODO: cambiar el string hardcodeado por leer el template de handlebars!
 
   safeWriteFileSync(newModelFilepath, text)
