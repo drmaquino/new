@@ -1,7 +1,7 @@
 import { Id } from './Id.model.js'
 
 export class {{ capitalized entityName }} {
-  constructor({ id = new Id() }) {
+  constructor({ id = Id.new() }) {
     this.id = id
   }
 }

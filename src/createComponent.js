@@ -202,9 +202,9 @@ export function createService({ entityName, path, importRepository = false, comp
 export function createIdModel({ path, componentType = 'model', componentsFolder = 'models', entityName = 'id' }) {
   const text = `import { randomUUID } from 'crypto'
 
-export class ${capitalize(entityName)} extends String {
-  constructor() {
-    super(randomUUID())
+export class ${capitalize(entityName)} {
+  static new() {
+    return randomUUID()
   }
 }
 `
@@ -232,7 +232,7 @@ export function createModel({ entityName, path, componentType = 'model', compone
   const text = `import { Id } from './Id.model.js'
 
 export class ${capitalize(entityName)} {
-  constructor({ id = new Id() }) {
+  constructor({ id = Id.new() }) {
     this.id = id
   }
 }
